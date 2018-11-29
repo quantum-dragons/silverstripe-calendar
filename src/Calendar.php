@@ -1,8 +1,22 @@
 <?php
 
+namespace QuantumDragons\Calendar;
+
+use SilverStripe\Control\RequestHandler;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\FieldType\DBHTMLText;
+use SilverStripe\View\ArrayData;
+use SilverStripe\View\Requirements;
+
 class Calendar extends RequestHandler
 {
-
+    /**
+     * Calendar constructor.
+     *
+     * @param $controller
+     * @param $name
+     * @param $calendarProvider
+     */
     public function __construct($controller, $name, $calendarProvider)
     {
         parent::__construct();
@@ -18,6 +32,9 @@ class Calendar extends RequestHandler
         $this->day = (int)date('d', $date);
     }
 
+    /**
+     * @return DBHTMLText
+     */
     public function index()
     {
         return $this->forTemplate();
@@ -25,39 +42,59 @@ class Calendar extends RequestHandler
 
     public function setDayLink($dayLink)
     {
-
+        //
     }
 
+    /**
+     * @return DBHTMLText
+     */
     public function forTemplate()
     {
         Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
         Requirements::javascript(THIRDPARTY_DIR . '/jquery-livequery/jquery.livequery.js');
-        Requirements::javascript('calendar/javascript/calendarsmall.js');
+        Requirements::javascript('QuantumDragons/Calendar: client/javascript/calendarsmall.js');
+
         return $this->showEvents ? $this->renderWith('CalendarLarge') : $this->renderWith('Calendar');
     }
 
-    public function Name()
+    /**
+     * @return string
+     */
+    public function getName()
     {
         return $this->name;
     }
 
-    public function Month()
+    /**
+     * @return integer
+     */
+    public function getMonth()
     {
         return $this->month;
     }
 
-    public function LongMonth()
+    /**
+     * @return string
+     */
+    public function getLongMonth()
     {
         $date = "{$this->year}-{$this->month}-1";
+
         return date('F', strtotime($date));
     }
 
-    public function Year()
+    /**
+     * @return integer
+     */
+    public function getYear()
     {
         return $this->year;
     }
 
-    public function Rows()
+    /**
+     * @return ArrayList
+     */
+    public function getRows()
     {
         $daysInMonth = date('t', mktime(0, 0, 0, $this->month));
 
@@ -135,14 +172,17 @@ class Calendar extends RequestHandler
         return $rows;
     }
 
-    public function Events()
+    /**
+     * @return mixed
+     */
+    public function getEvents()
     {
         if ($this->calendarProvider) {
             return $this->calendarProvider->getCalendarItems($this->year, $this->month, $this->day);
         }
     }
 
-    public function PrevLink()
+    public function getPrevLink()
     {
         $month = $this->month;
         $year = $this->year;
@@ -155,7 +195,7 @@ class Calendar extends RequestHandler
         return ((strpos($link, '?') !== false) ? "$link&amp;" : "$link?") . "calendardate=$year-$month-1";
     }
 
-    function NextLink()
+    public function getNextLink()
     {
         $month = $this->month;
         $year = $this->year;
@@ -168,7 +208,7 @@ class Calendar extends RequestHandler
         return ((strpos($link, '?') !== false) ? "$link&amp;" : "$link?") . "calendardate=$year-$month-1";
     }
 
-    public function Url()
+    public function getUrl()
     {
         return $this->controller->Link($this->name);
     }

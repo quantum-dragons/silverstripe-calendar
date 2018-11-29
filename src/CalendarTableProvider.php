@@ -1,4 +1,7 @@
 <?php
+
+namespace QuantumDragons\Calendar;
+
 /**
  * CalendarTableProvider interface used by CalendarTable.
  *
@@ -10,8 +13,8 @@ interface CalendarTableProvider
     /**
      * Return all calendar items starting in the given month.
      *
-     * @param year
-     * @param month
+     * @param $year
+     * @param $month
      *
      * @return DataObjectSet
      */

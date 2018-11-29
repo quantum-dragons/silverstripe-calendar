@@ -1,4 +1,12 @@
 <?php
+
+namespace QuantumDragons\Calendar;
+
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\FieldType\DBDate;
+use SilverStripe\View\ArrayData;
+use SilverStripe\View\Requirements;
+
 /**
  * CalendarTable displays all calendar items in a table list format. Shows
  * current month only, but allows to switch to other months via ajax requests.
@@ -13,16 +21,17 @@ class CalendarTable extends Calendar
     {
         Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
         Requirements::javascript(THIRDPARTY_DIR . '/jquery-livequery/jquery.livequery.js');
-        Requirements::javascript('calendar/javascript/calendarsmall.js');
+        Requirements::javascript('QuantumDragons/Calendar: client/javascript/calendarsmall.js');
+
         return $this->renderWith('CalendarTable');
     }
 
     /**
      * Fetch all items.
      *
-     * @return DataObjectSet
+     * @return ArrayData|ArrayList
      */
-    public function Rows()
+    public function getRows()
     {
         $dayOfMonth = 1;
         $months = new ArrayList();
@@ -42,19 +51,20 @@ class CalendarTable extends Calendar
 
                 // rewrite the field names to 'StartDate' and 'FinishDate'
                 if ($StartDate) {
-                    $startDateField = new Date();
+                    $startDateField = new DBDate();
                     $startDateField->setValue($StartDate);
                     $event->StartDate = $startDateField;
                 }
 
                 if ($FinishDate) {
-                    $finishDateField = new Date();
+                    $finishDateField = new DBDate();
                     $finishDateField->setValue($FinishDate);
                     $event->FinishDate = $finishDateField;
                 }
 
                 // tag this event if overflowing from previous month
-                if ($event->StartDate && strtotime($event->StartDate->getValue()) < strtotime($this->CurrentPageDate())) {
+                if ($event->StartDate &&
+                    strtotime($event->StartDate->getValue()) < strtotime($this->CurrentPageDate())) {
                     $event->StartedBeforeThisMonth = true;
                 }
 
@@ -78,8 +88,8 @@ class CalendarTable extends Calendar
 
         return new ArrayData(array(
             'Events'    => $months,
-            'LongMonth' => $this->LongMonth(),
-            'Year'      => $this->Year(),
+            'LongMonth' => $this->getLongMonth(),
+            'Year'      => $this->getYear(),
         ));
     }
 
